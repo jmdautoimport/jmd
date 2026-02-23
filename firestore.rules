@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Website Settings
+    match /website_settings/{document} {
+      allow read, write: if true;
+    }
+    
+    // Cars Collection
+    match /cars/{carId} {
+      allow read, write: if true;
+    }
+    
+    // Bookings Collection
+    match /bookings/{bookingId} {
+      allow read, write: if true;
+    }
+    
+    // Pricing Settings
+    match /pricing_settings/{document} {
+      allow read, write: if true;
+    }
+    
+    // Catch-all (Optional but helpful for testing)
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
+
