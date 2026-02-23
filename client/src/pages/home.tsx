@@ -491,18 +491,18 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-transparent" />
           <div className="relative z-10 max-w-4xl mx-auto text-center">
             <h2 className="text-4xl md:text-6xl font-black text-white mb-6 uppercase tracking-tighter">
-              Can't find your dream car?
+              {settings?.ctaTitle || "Can't find your dream car?"}
             </h2>
             <p className="text-2xl text-white/90 mb-12 font-medium">
-              Our concierge service can source any vehicle internationally to your exact specifications.
+              {settings?.ctaSubtitle || "Our concierge service can source any vehicle internationally to your exact specifications."}
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Link href="/find-me-a-car">
+              <Link href={settings?.ctaButtonLink || "/find-me-a-car"}>
                 <Button
                   size="lg"
                   className="px-10 py-8 text-xl font-black bg-white text-black hover:bg-slate-100 border-0 shadow-2xl hover:scale-105 transition-transform"
                 >
-                  Start Sourcing Request
+                  {settings?.ctaButtonText || "Start Sourcing Request"}
                 </Button>
               </Link>
               <Link href="/inventory">

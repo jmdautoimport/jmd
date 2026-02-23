@@ -23,7 +23,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Plus, Pencil, Trash2, Eye, Copy } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, Copy, FileDown, FileText } from "lucide-react";
 import { useState } from "react";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -87,6 +87,155 @@ export default function CarsList() {
     },
   });
 
+  const exportToCsv = () => {
+    if (!cars || cars.length === 0) {
+      toast({
+        title: "No vehicles to export",
+        description: "Add vehicles to inventory before exporting.",
+      });
+      return;
+    }
+
+    const headers = [
+      "ID",
+      "Name",
+      "Category",
+      "Year",
+      "Transmission",
+      "Fuel Type",
+      "Coming Soon",
+      "Sold",
+      "Published",
+      "Slug",
+    ];
+
+    const rows = cars.map((car) => [
+      car.id || "",
+      car.name,
+      car.category,
+      car.year?.toString() ?? "",
+      car.transmission,
+      car.fuelType,
+      car.isComingSoon ? "Yes" : "No",
+      car.isSold ? "Yes" : "No",
+      car.published ? "Yes" : "No",
+      car.slug,
+    ]);
+
+    const escapeCell = (value: unknown) => {
+      const str = String(value ?? "").replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const csvContent = [headers, ...rows]
+      .map((row) => row.map(escapeCell).join(","))
+      .join("\r\n");
+
+    const blob = new Blob([csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const timestamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
+    link.href = url;
+    link.download = `inventory-${timestamp}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    toast({
+      title: "Export started",
+      description: "CSV file has been generated.",
+    });
+  };
+
+  const exportToPdf = () => {
+    if (!cars || cars.length === 0) {
+      toast({
+        title: "No vehicles to export",
+        description: "Add vehicles to inventory before exporting.",
+      });
+      return;
+    }
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      toast({
+        title: "Popup blocked",
+        description: "Allow popups for this site to export as PDF.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const title = "Inventory Export";
+    const headerHtml = `
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Year</th>
+        <th>Transmission</th>
+        <th>Fuel Type</th>
+        <th>Coming Soon</th>
+        <th>Sold</th>
+        <th>Published</th>
+      </tr>
+    `;
+
+    const rowsHtml = cars
+      .map(
+        (car) => `
+        <tr>
+          <td>${car.id || ""}</td>
+          <td>${car.name}</td>
+          <td>${car.category}</td>
+          <td>${car.year ?? ""}</td>
+          <td>${car.transmission}</td>
+          <td>${car.fuelType}</td>
+          <td>${car.isComingSoon ? "Yes" : "No"}</td>
+          <td>${car.isSold ? "Yes" : "No"}</td>
+          <td>${car.published ? "Yes" : "No"}</td>
+        </tr>
+      `
+      )
+      .join("");
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <title>${title}</title>
+          <style>
+            body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 24px; }
+            h1 { font-size: 20px; margin-bottom: 16px; }
+            table { width: 100%; border-collapse: collapse; font-size: 12px; }
+            th, td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; }
+            th { background-color: #f5f5f5; font-weight: 600; }
+            tr:nth-child(even) { background-color: #fafafa; }
+          </style>
+        </head>
+        <body>
+          <h1>${title}</h1>
+          <table>
+            <thead>${headerHtml}</thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+
+    toast({
+      title: "Export ready",
+      description: "Print dialog opened. Choose 'Save as PDF' to export.",
+    });
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -94,12 +243,34 @@ export default function CarsList() {
           <h1 className="text-4xl font-bold mb-2">Manage Inventory</h1>
           <p className="text-muted-foreground">View and manage all vehicles in your current inventory</p>
         </div>
-        <Link href="/admin/cars/new">
-          <Button size="lg" data-testid="button-add-car" className="font-bold">
-            <Plus className="mr-2 h-4 w-4" />
-            Add New Car
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="font-bold"
+            onClick={exportToCsv}
+            disabled={isLoading}
+          >
+            <FileDown className="mr-2 h-4 w-4" />
+            Export CSV
           </Button>
-        </Link>
+          <Button
+            variant="outline"
+            size="sm"
+            className="font-bold"
+            onClick={exportToPdf}
+            disabled={isLoading}
+          >
+            <FileText className="mr-2 h-4 w-4" />
+            Export PDF
+          </Button>
+          <Link href="/admin/cars/new">
+            <Button size="lg" data-testid="button-add-car" className="font-bold">
+              <Plus className="mr-2 h-4 w-4" />
+              Add New Car
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <Card className="shadow-sm">
