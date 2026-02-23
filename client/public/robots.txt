@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://www.jdmautoimport.com.au/sitemap.xml
+Sitemap: https://www.jdmautoimports.com.au/sitemap.xml
