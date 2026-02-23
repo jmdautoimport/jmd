@@ -73,13 +73,18 @@ export default function Booking() {
                     notes: data.notes || `Car ID: ${data.carId}`
                 };
 
-                await fetch("/api/notify/booking", {
+                const notifyRes = await fetch("/api/notify/booking", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(notifyData),
                 });
+                if (!notifyRes.ok) {
+                    const errorText = await notifyRes.text();
+                    throw new Error(`Notification failed (${notifyRes.status}): ${errorText}`);
+                }
             } catch (notifyErr) {
                 console.warn("Failed to send notification:", notifyErr);
+                throw notifyErr;
             }
 
             return result;

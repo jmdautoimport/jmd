@@ -1,5 +1,3 @@
-import nodemailer from "nodemailer";
-
 export interface EmailOptions {
   to: string;
   subject: string;
@@ -7,60 +5,40 @@ export interface EmailOptions {
   html?: string;
 }
 
-// Create a transporter using environment variables
-// This can be configured for Gmail, Outlook, SendGrid, etc.
 export async function sendEmail({ to, subject, text, html }: EmailOptions) {
-  // 1. Validate configuration
-  const config = {
-    host: process.env.EMAIL_HOST || "smtp.gmail.com",
-    port: parseInt(process.env.EMAIL_PORT || "587"),
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  };
-
-  // Gmail-specific and Port-specific logic
-  const isGmail = config.host.includes("gmail.com");
-  const isSSLPort = config.port === 465;
-  const secure = isSSLPort || (process.env.EMAIL_SECURE === "true" && !isGmail);
-
-  if (!config.user || !config.pass) {
-    console.error("Email Error: EMAIL_USER or EMAIL_PASS is missing in .env");
-    return;
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY is missing in .env");
   }
 
-  // 2. Create transporter on-demand to ensure it has latest env vars
-   const transporter = nodemailer.createTransport({
-     host: config.host,
-     port: config.port,
-     secure: secure,
-     auth: {
-       user: config.user,
-       pass: config.pass,
-     },
-     tls: {
-       // Do not fail on invalid certs
-       rejectUnauthorized: false,
-       // Force TLS version if needed
-       minVersion: 'TLSv1.2'
-     }
-   });
+  const fromEmail = process.env.EMAIL_FROM || "onboarding@resend.dev";
+  const fromName = process.env.EMAIL_FROM_NAME || "JDM Auto Imports";
+  const from = `"${fromName}" <${fromEmail}>`;
 
   try {
-    const info = await transporter.sendMail({
-      from: `"${process.env.EMAIL_FROM_NAME || 'JDM Auto Imports'}" <${config.user}>`,
-      to,
-      subject,
-      text,
-      html: html || text.replace(/\n/g, "<br>"),
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from,
+        to: [to],
+        subject,
+        text,
+        html: html || text.replace(/\n/g, "<br>"),
+      }),
     });
 
-    return info;
-  } catch (error: any) {
-    if (error.code === 'EAUTH') {
-      console.error("Email Error: Authentication failed. Please check credentials.");
-    } else {
-      console.error("Email Error: Failed to send email.");
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Resend API error (${response.status}): ${errorText}`);
     }
+
+    return await response.json();
+  } catch (error: any) {
+    console.error("Email Error: Failed to send via Resend.");
     throw error;
   }
 }

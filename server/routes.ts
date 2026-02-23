@@ -206,15 +206,18 @@ export async function registerRoutes(app: Express): Promise<Server | void> {
     try {
       const data = req.body;
       const { title, text } = generateInquiryEmailContent(data);
+      const adminEmail = process.env.ADMIN_EMAIL;
+
+      if (!adminEmail) {
+        throw new Error("ADMIN_EMAIL is missing in server environment");
+      }
 
       // 1. Send Email
-      if (process.env.ADMIN_EMAIL) {
-        await sendEmail({
-          to: process.env.ADMIN_EMAIL,
-          subject: title,
-          text: text,
-        });
-      }
+      await sendEmail({
+        to: adminEmail,
+        subject: title,
+        text: text,
+      });
 
       // 2. Send Push Notification
       const tokens = Array.from(adminTokens);
@@ -246,15 +249,18 @@ export async function registerRoutes(app: Express): Promise<Server | void> {
     try {
       const data = req.body;
       const { title, text } = generateBookingEmailContent(data);
+      const adminEmail = process.env.ADMIN_EMAIL;
+
+      if (!adminEmail) {
+        throw new Error("ADMIN_EMAIL is missing in server environment");
+      }
 
       // 1. Send Email
-      if (process.env.ADMIN_EMAIL) {
-        await sendEmail({
-          to: process.env.ADMIN_EMAIL,
-          subject: title,
-          text: text,
-        });
-      }
+      await sendEmail({
+        to: adminEmail,
+        subject: title,
+        text: text,
+      });
 
       // 2. Send Push Notification
       const tokens = Array.from(adminTokens);

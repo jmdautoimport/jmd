@@ -37,13 +37,17 @@ export default function Contact() {
       
       // Trigger notification
       try {
-        await fetch("/api/notify/inquiry", {
+        const notifyRes = await fetch("/api/notify/inquiry", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),
         });
+        if (!notifyRes.ok) {
+          const errorText = await notifyRes.text();
+          throw new Error(`Notification failed (${notifyRes.status}): ${errorText}`);
+        }
       } catch (notifyErr) {
-        console.warn("Failed to send notification:", notifyErr);
+        throw notifyErr;
       }
       
       return result;

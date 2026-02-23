@@ -85,14 +85,18 @@ export function InquiryForm({
             
             // Trigger notification
             try {
-                await fetch("/api/notify/inquiry", {
+                const notifyRes = await fetch("/api/notify/inquiry", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(data),
                 });
+                if (!notifyRes.ok) {
+                    const errorText = await notifyRes.text();
+                    throw new Error(`Notification failed (${notifyRes.status}): ${errorText}`);
+                }
             } catch (notifyErr) {
                 console.warn("Failed to send notification:", notifyErr);
-                // Don't fail the submission if notification fails
+                throw notifyErr;
             }
 
             await queryClient.invalidateQueries({ queryKey: ["inquiries"] });
