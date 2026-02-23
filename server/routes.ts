@@ -290,22 +290,8 @@ export async function registerRoutes(app: Express): Promise<Server | void> {
         data?: Record<string, string>;
       };
       const tokens = Array.from(adminTokens);
-
-      // Also send email if configured
-      if (process.env.ADMIN_EMAIL) {
-        try {
-          await sendEmail({
-            to: process.env.ADMIN_EMAIL,
-            subject: title || "Admin Notification",
-            text: body || "New notification from JDM Auto Imports",
-          });
-        } catch (emailErr) {
-          console.error("Failed to send notification email:", emailErr);
-        }
-      }
-
       if (tokens.length === 0) {
-        return res.status(200).json({ ok: true, message: "Email sent (if configured), but no push tokens registered" });
+        return res.status(200).json({ ok: true, message: "No admin push tokens registered" });
       }
       const serverKey = process.env.FCM_SERVER_KEY;
       if (!serverKey) {
