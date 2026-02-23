@@ -1089,6 +1089,9 @@ export default function CarForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Dossier Title</FormLabel>
+                      <FormDescription>
+                        Short heading for this verification summary, shown on the vehicle page.
+                      </FormDescription>
                       <FormControl>
                         <Input placeholder="Vehicle Integrity" {...field} value={field.value || ""} />
                       </FormControl>
@@ -1102,6 +1105,9 @@ export default function CarForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Auction Grade</FormLabel>
+                      <FormDescription>
+                        Enter the auction house grade, e.g. 4.5, 4, 3.5, R or RA.
+                      </FormDescription>
                       <FormControl>
                         <Input placeholder="e.g. 4.5B" {...field} value={field.value || ""} />
                       </FormControl>
@@ -1117,6 +1123,9 @@ export default function CarForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Verified Mileage</FormLabel>
+                      <FormDescription>
+                        Describe how the mileage has been confirmed, e.g. Verified, Genuine, Unknown.
+                      </FormDescription>
                       <FormControl>
                         <Input placeholder="e.g. Verified" {...field} value={field.value || ""} />
                       </FormControl>
@@ -1130,6 +1139,9 @@ export default function CarForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Accident History</FormLabel>
+                      <FormDescription>
+                        Summarise any known accident or repair history, e.g. None, Minor repair.
+                      </FormDescription>
                       <FormControl>
                         <Input placeholder="e.g. None" {...field} value={field.value || ""} />
                       </FormControl>
@@ -1144,6 +1156,9 @@ export default function CarForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Auction Sheet Decode Text</FormLabel>
+                    <FormDescription>
+                      Plain English explanation of the auction sheet notes, damage marks and inspector comments.
+                    </FormDescription>
                     <FormControl>
                       <Textarea
                         placeholder="Description of the auction sheet verification..."

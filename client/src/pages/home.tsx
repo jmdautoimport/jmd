@@ -47,6 +47,9 @@ export default function Home() {
     { number: settings?.stats4Value || "", label: settings?.stats4Label || "" },
   ].filter(s => s.number && s.label);
 
+  const categories = Array.from(new Set(cars?.map((car) => car.category) || []));
+  const transmissions = Array.from(new Set(cars?.map((car) => car.transmission) || []));
+
   const featuredCars = cars?.filter(c => c.slug && !c.isComingSoon && c.published !== false).slice(0, 3) || [];
   const comingSoonPreview = cars?.filter(c => c.slug && c.isComingSoon && c.published !== false).slice(0, 3) || [];
 
@@ -104,7 +107,6 @@ export default function Home() {
               className="text-5xl md:text-8xl font-black text-white mb-6 tracking-tighter uppercase leading-[0.9] drop-shadow-2xl"
             >
               {settings?.heroTitle || "Premium Global Imports"}
-              <span className="block text-white drop-shadow-2xl">Delivered to You</span>
             </motion.h1>
 
             <motion.p
@@ -151,11 +153,11 @@ export default function Home() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">All Categories</SelectItem>
-                        <SelectItem value="sports">Sports / Performance</SelectItem>
-                        <SelectItem value="sedan">Non Hybrid</SelectItem>
-                        <SelectItem value="suv">Luxury SUVs</SelectItem>
-                        <SelectItem value="van">Luxury MPVs / Vans</SelectItem>
-                        <SelectItem value="electric">Electric / Hybrid</SelectItem>
+                        {categories.map((cat) => (
+                          <SelectItem key={cat} value={cat}>
+                            {cat}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -167,8 +169,11 @@ export default function Home() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">All Types</SelectItem>
-                        <SelectItem value="automatic">Automatic</SelectItem>
-                        <SelectItem value="manual">Manual</SelectItem>
+                        {transmissions.map((trans) => (
+                          <SelectItem key={trans} value={trans}>
+                            {trans}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
