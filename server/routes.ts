@@ -8,7 +8,7 @@ import { insertCarSchema } from "@shared/schema";
 import { z } from "zod";
 import { upload, getImageUrl, extractFilenameFromUrl } from "./upload";
 import type { Request, Response } from "express";
-import { generateInquiryEmailContent, generateBookingEmailContent } from "./email";
+import { sendEmail, generateInquiryEmailContent, generateBookingEmailContent } from "./email";
 
 // In-memory registry of admin device tokens
 const adminTokens = new Set<string>();
@@ -206,7 +206,17 @@ export async function registerRoutes(app: Express): Promise<Server | void> {
     try {
       const data = req.body;
       const { title, text } = generateInquiryEmailContent(data);
-      // Send Push Notification
+
+      // 1. Send Email
+      if (process.env.ADMIN_EMAIL) {
+        await sendEmail({
+          to: process.env.ADMIN_EMAIL,
+          subject: title,
+          text: text,
+        });
+      }
+
+      // 2. Send Push Notification
       const tokens = Array.from(adminTokens);
       if (tokens.length > 0 && process.env.FCM_SERVER_KEY) {
         const payload = {
@@ -236,7 +246,17 @@ export async function registerRoutes(app: Express): Promise<Server | void> {
     try {
       const data = req.body;
       const { title, text } = generateBookingEmailContent(data);
-      // Send Push Notification
+
+      // 1. Send Email
+      if (process.env.ADMIN_EMAIL) {
+        await sendEmail({
+          to: process.env.ADMIN_EMAIL,
+          subject: title,
+          text: text,
+        });
+      }
+
+      // 2. Send Push Notification
       const tokens = Array.from(adminTokens);
       if (tokens.length > 0 && process.env.FCM_SERVER_KEY) {
         const payload = {
@@ -270,8 +290,22 @@ export async function registerRoutes(app: Express): Promise<Server | void> {
         data?: Record<string, string>;
       };
       const tokens = Array.from(adminTokens);
+
+      // Also send email if configured
+      if (process.env.ADMIN_EMAIL) {
+        try {
+          await sendEmail({
+            to: process.env.ADMIN_EMAIL,
+            subject: title || "Admin Notification",
+            text: body || "New notification from JDM Auto Imports",
+          });
+        } catch (emailErr) {
+          console.error("Failed to send notification email:", emailErr);
+        }
+      }
+
       if (tokens.length === 0) {
-        return res.status(200).json({ ok: true, message: "No admin push tokens registered" });
+        return res.status(200).json({ ok: true, message: "Email sent (if configured), but no push tokens registered" });
       }
       const serverKey = process.env.FCM_SERVER_KEY;
       if (!serverKey) {
