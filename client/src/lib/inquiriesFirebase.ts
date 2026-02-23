@@ -7,6 +7,7 @@ import {
     where,
     orderBy,
     updateDoc,
+    deleteDoc,
 } from "firebase/firestore";
 import type { Inquiry, InsertInquiry } from "@shared/schema";
 
@@ -104,6 +105,18 @@ export async function updateInquiryStatusFirebase(
 
     const docRef = snap.docs[0].ref;
     await updateDoc(docRef, { status });
+}
+
+export async function deleteInquiryFirebase(id: string): Promise<void> {
+    const q = query(
+        collection(db, INQUIRIES_COLLECTION),
+        where("id", "==", id),
+    );
+    const snap = await getDocs(q);
+    if (snap.empty) return;
+
+    const docRef = snap.docs[0].ref;
+    await deleteDoc(docRef);
 }
 
 export async function getInquiriesByCarFirebase(carId: string): Promise<Inquiry[]> {

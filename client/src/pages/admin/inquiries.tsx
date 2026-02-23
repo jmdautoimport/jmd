@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Inquiry, inquiryStatusSchema } from "@shared/schema";
-import { getAllInquiriesFirebase, updateInquiryStatusFirebase } from "@/lib/inquiriesFirebase";
+import { getAllInquiriesFirebase, updateInquiryStatusFirebase, deleteInquiryFirebase } from "@/lib/inquiriesFirebase";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -67,6 +67,24 @@ export default function AdminInquiries() {
       toast({
         title: "Update failed",
         description: "Unable to update status. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteInquiryFirebase(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["inquiries"] });
+      toast({
+        title: "Inquiry deleted",
+        description: "The inquiry has been removed.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Delete failed",
+        description: "Unable to delete inquiry. Please try again.",
         variant: "destructive",
       });
     },
@@ -252,6 +270,19 @@ export default function AdminInquiries() {
                       <TableCell className="pr-6 text-right" onClick={(e) => e.stopPropagation()}>
                         <Button variant="ghost" size="sm" onClick={() => setSelectedInquiry(inquiry)}>
                           <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive ml-1"
+                          disabled={deleteMutation.isPending}
+                          onClick={() => {
+                            if (window.confirm("Delete this inquiry? This cannot be undone.")) {
+                              deleteMutation.mutate(inquiry.id);
+                            }
+                          }}
+                        >
+                          <X className="h-4 w-4" />
                         </Button>
                       </TableCell>
                     </TableRow>
