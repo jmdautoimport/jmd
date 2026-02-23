@@ -19,7 +19,7 @@ export default function AdminLogin() {
         setIsLoading(true);
 
         // Simple client-side check as requested "admin"/"admin"
-        if (username === "admin" && password === "admin") {
+        if (username === "admin" && password === "jdm@5857aus") {
             // Small delay to simulate network request
             setTimeout(() => {
                 localStorage.setItem("isAdminAuthenticated", "true");
