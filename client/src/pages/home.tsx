@@ -12,6 +12,7 @@ import { getAllCarsFirebase } from "@/lib/carsFirebase";
 import { getOptimizedImageUrl, getThumbnailUrl } from "@/lib/imageUtils";
 import { SEO } from "@/components/seo";
 import { useWebsiteSettings } from "@/hooks/use-website-settings";
+import { formatPrice, stripHtml } from "@/lib/utils";
 import { motion } from "framer-motion";
 import {
   Users,
@@ -271,10 +272,16 @@ export default function Home() {
                                 {car.year}
                               </Badge>
                             </div>
+                            <div className="text-lg font-bold text-foreground">
+                              {formatPrice(car.price)}
+                            </div>
+                            <div className="text-xs font-semibold text-muted-foreground">
+                              {car.kms ? `Mileage: ${car.kms}` : ''}
+                            </div>
                           </div>
                         </div>
                         <p className="text-sm text-muted-foreground mb-6 line-clamp-2">
-                          {car.description}
+                          {stripHtml(car.description)}
                         </p>
                         <div className="flex items-center gap-4 text-xs font-medium text-muted-foreground mb-6">
                           <div className="flex items-center gap-1.5">
@@ -354,10 +361,16 @@ export default function Home() {
                                 {car.year}
                               </Badge>
                             </div>
+                            <div className="text-lg font-bold text-foreground">
+                              {formatPrice(car.price)}
+                            </div>
+                            <div className="text-xs font-semibold text-muted-foreground">
+                              {car.kms ? `Mileage: ${car.kms}` : ''}
+                            </div>
                           </div>
                         </div>
                         <p className="text-sm text-muted-foreground mb-6 line-clamp-2">
-                          {car.description}
+                          {stripHtml(car.description)}
                         </p>
                         <Button className="w-full font-bold group bg-blue-600 hover:bg-blue-700">
                           Express Interest

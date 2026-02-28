@@ -13,7 +13,7 @@ import { getAllCarsFirebase } from "@/lib/carsFirebase";
 import { getThumbnailUrl } from "@/lib/imageUtils";
 import { SEO } from "@/components/seo";
 import { useWebsiteSettings } from "@/hooks/use-website-settings";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, stripHtml } from "@/lib/utils";
 
 export default function ComingSoonInventory() {
   const settings = useWebsiteSettings();
@@ -148,7 +148,7 @@ export default function ComingSoonInventory() {
                         </div>
                       </div>
                       <p className="text-sm text-muted-foreground mb-6 line-clamp-2">
-                        {car.description}
+                        {stripHtml(car.description)}
                       </p>
                       <div className="flex items-center gap-4 text-xs font-medium text-muted-foreground mb-6">
                         <div className="flex items-center gap-1.5">
