@@ -23,6 +23,7 @@ import { getAllCarsFirebase } from "@/lib/carsFirebase";
 import { getThumbnailUrl } from "@/lib/imageUtils";
 import { SEO } from "@/components/seo";
 import { useWebsiteSettings } from "@/hooks/use-website-settings";
+import { formatPrice } from "@/lib/utils";
 
 export default function Cars() {
   const settings = useWebsiteSettings();
@@ -329,13 +330,19 @@ export default function Cars() {
                             <h3 className="text-xl font-bold mb-1">
                               {car.name}
                             </h3>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 mb-2">
                               <Badge variant="default" className="text-[10px] uppercase font-bold tracking-tight bg-primary text-primary-foreground">
                                 {car.category}
                               </Badge>
                               <Badge variant="outline" className="text-[10px] uppercase font-bold tracking-tight border-blue-500 text-blue-500">
                                 {car.year}
                               </Badge>
+                            </div>
+                            <div className="text-lg font-bold text-foreground">
+                              {formatPrice(car.price)}
+                            </div>
+                            <div className="text-xs font-semibold text-muted-foreground">
+                              {car.kms ? `Mileage: ${car.kms}` : ''}
                             </div>
                           </div>
                         </div>

@@ -24,6 +24,8 @@ export const cars = pgTable("cars", {
   isComingSoon: boolean("is_coming_soon").notNull().default(false),
   isSold: boolean("is_sold").notNull().default(false),
   // Technical Specifications
+  price: text("price"),
+  kms: text("kms"),
   consumption: text("consumption"),
   engine: text("engine"),
   power: text("power"),
@@ -78,6 +80,8 @@ export const insertCarSchema = createInsertSchema(cars).omit({
   timelineDescs: z.array(z.string()).optional().nullable().default([]),
   isComingSoon: z.boolean().optional().default(false),
   isSold: z.boolean().optional().default(false),
+  price: z.string().optional().nullable(),
+  kms: z.string().optional().nullable(),
   auctionGrade: z.string().optional().nullable(),
   verifiedMileage: z.string().optional().nullable(),
   accidentHistory: z.string().optional().nullable(),

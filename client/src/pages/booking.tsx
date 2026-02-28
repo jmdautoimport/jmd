@@ -78,13 +78,13 @@ export default function Booking() {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(notifyData),
                 });
+                // Keep moving even if notification failed
                 if (!notifyRes.ok) {
                     const errorText = await notifyRes.text();
-                    throw new Error(`Notification failed (${notifyRes.status}): ${errorText}`);
+                    console.warn(`Notification failed (${notifyRes.status}): ${errorText}`);
                 }
             } catch (notifyErr) {
                 console.warn("Failed to send notification:", notifyErr);
-                throw notifyErr;
             }
 
             return result;

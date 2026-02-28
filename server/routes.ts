@@ -96,7 +96,7 @@ export async function registerRoutes(app: Express): Promise<Server | void> {
         }
         const files = Array.isArray(req.files) ? req.files : [req.files];
         const urls = await Promise.all(
-          files.map(async (file) => {
+          files.map(async (file: any) => {
             const url = await getImageUrl(file.filename || file.buffer, file);
             const filename = file.filename || extractFilenameFromUrl(url) || "unknown";
             return { url, filename };
@@ -209,38 +209,48 @@ export async function registerRoutes(app: Express): Promise<Server | void> {
       const adminEmail = process.env.ADMIN_EMAIL;
 
       if (!adminEmail) {
-        throw new Error("ADMIN_EMAIL is missing in server environment");
+        console.warn("ADMIN_EMAIL is missing in server environment - skipping email notification");
+      } else {
+        // 1. Send Email (non-blocking for the API response if we want, but here we wait and catch)
+        try {
+          await sendEmail({
+            to: adminEmail,
+            subject: title,
+            text: text,
+          });
+        } catch (emailErr) {
+          console.error("Email notification failed:", emailErr);
+        }
       }
-
-      // 1. Send Email
-      await sendEmail({
-        to: adminEmail,
-        subject: title,
-        text: text,
-      });
 
       // 2. Send Push Notification
-      const tokens = Array.from(adminTokens);
-      if (tokens.length > 0 && process.env.FCM_SERVER_KEY) {
-        const payload = {
-          registration_ids: tokens,
-          notification: { title, body: text.substring(0, 100) + "..." },
-          priority: "high",
-        };
-        await fetch("https://fcm.googleapis.com/fcm/send", {
-          method: "POST",
-          headers: {
-            Authorization: `key=${process.env.FCM_SERVER_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        });
+      try {
+        const tokens = Array.from(adminTokens);
+        if (tokens.length > 0 && process.env.FCM_SERVER_KEY) {
+          const payload = {
+            registration_ids: tokens,
+            notification: { title, body: text.substring(0, 100) + "..." },
+            priority: "high",
+          };
+          await fetch("https://fcm.googleapis.com/fcm/send", {
+            method: "POST",
+            headers: {
+              Authorization: `key=${process.env.FCM_SERVER_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+        }
+      } catch (fcmErr) {
+        console.error("FCM notification failed:", fcmErr);
       }
 
+      // Always return 200 OK if the request was processed, even if sub-notifications failed
       res.json({ ok: true });
     } catch (error: any) {
-      console.error("Inquiry notification error:", error);
-      res.status(500).json({ error: error.message });
+      console.error("Inquiry notification route error:", error);
+      // We still return 200 to ensure the client doesn't block the user's success state
+      res.json({ ok: false, error: error.message });
     }
   });
 
@@ -252,38 +262,46 @@ export async function registerRoutes(app: Express): Promise<Server | void> {
       const adminEmail = process.env.ADMIN_EMAIL;
 
       if (!adminEmail) {
-        throw new Error("ADMIN_EMAIL is missing in server environment");
+        console.warn("ADMIN_EMAIL is missing in server environment - skipping email notification");
+      } else {
+        // 1. Send Email
+        try {
+          await sendEmail({
+            to: adminEmail,
+            subject: title,
+            text: text,
+          });
+        } catch (emailErr) {
+          console.error("Email notification failed:", emailErr);
+        }
       }
 
-      // 1. Send Email
-      await sendEmail({
-        to: adminEmail,
-        subject: title,
-        text: text,
-      });
-
       // 2. Send Push Notification
-      const tokens = Array.from(adminTokens);
-      if (tokens.length > 0 && process.env.FCM_SERVER_KEY) {
-        const payload = {
-          registration_ids: tokens,
-          notification: { title, body: text.substring(0, 100) + "..." },
-          priority: "high",
-        };
-        await fetch("https://fcm.googleapis.com/fcm/send", {
-          method: "POST",
-          headers: {
-            Authorization: `key=${process.env.FCM_SERVER_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        });
+      try {
+        const tokens = Array.from(adminTokens);
+        if (tokens.length > 0 && process.env.FCM_SERVER_KEY) {
+          const payload = {
+            registration_ids: tokens,
+            notification: { title, body: text.substring(0, 100) + "..." },
+            priority: "high",
+          };
+          await fetch("https://fcm.googleapis.com/fcm/send", {
+            method: "POST",
+            headers: {
+              Authorization: `key=${process.env.FCM_SERVER_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+        }
+      } catch (fcmErr) {
+        console.error("FCM notification failed:", fcmErr);
       }
 
       res.json({ ok: true });
     } catch (error: any) {
-      console.error("Booking notification error:", error);
-      res.status(500).json({ error: error.message });
+      console.error("Booking notification route error:", error);
+      res.json({ ok: false, error: error.message });
     }
   });
 

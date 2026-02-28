@@ -42,6 +42,8 @@ import {
   createImagePreview,
   revokeImagePreview,
 } from "@/lib/imageUpload";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const categories = ["Sedan", "SUV", "Sports", "Luxury", "Electric", "Compact"];
 const transmissions = ["Automatic", "Manual"];
@@ -240,6 +242,8 @@ export default function CarForm() {
       hasAC: true,
       hasUSB: false,
       isComingSoon: false,
+      price: "",
+      kms: "",
       consumption: "",
       engine: "",
       power: "",
@@ -277,6 +281,8 @@ export default function CarForm() {
         hasAC: carData.hasAC as boolean,
         hasUSB: carData.hasUSB as boolean,
         isComingSoon: (carData.isComingSoon as boolean) || false,
+        price: (carData.price as string) || "",
+        kms: (carData.kms as string) || "",
         consumption: (carData.consumption as string) || "",
         engine: (carData.engine as string) || "",
         power: (carData.power as string) || "",
@@ -544,6 +550,36 @@ export default function CarForm() {
                 )}
               />
 
+              <div className="grid grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Price</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. $89,990 Drive Away or POA" {...field} value={field.value || ""} data-testid="input-price" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="kms"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Kilometers (KMs)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. 45,000 km or Delivery Miles" {...field} value={field.value || ""} data-testid="input-kms" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <FormField
                 control={form.control}
                 name="category"
@@ -576,12 +612,14 @@ export default function CarForm() {
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea
-                        placeholder="Describe the car's features and highlights..."
-                        className="min-h-24"
-                        {...field}
-                        data-testid="input-description"
-                      />
+                      <div className="bg-white">
+                        <ReactQuill
+                          theme="snow"
+                          value={field.value}
+                          onChange={field.onChange}
+                          className="h-64 mb-12"
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

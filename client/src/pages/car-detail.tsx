@@ -46,6 +46,7 @@ import { getOptimizedImageUrl, getThumbnailUrl } from "@/lib/imageUtils";
 import { SEO } from "@/components/seo";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { addDays, format } from "date-fns";
+import { formatPrice } from "@/lib/utils";
 
 export default function CarDetail() {
   const { slug } = useParams();
@@ -202,6 +203,19 @@ export default function CarDetail() {
                   READY FOR AUSTRALIA
                 </div>
               </div>
+
+              <div className="flex items-center gap-4 mt-8">
+                <div className="bg-blue-600 px-6 py-3 rounded-2xl shadow-xl shadow-blue-500/20">
+                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-200 mb-1">Vehicle Price</div>
+                  <div className="text-3xl font-bold tracking-tight text-white">{formatPrice(car.price, 'POA')}</div>
+                </div>
+                {car.kms && (
+                  <div className="bg-white/10 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/10">
+                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70 mb-1">Mileage</div>
+                    <div className="text-2xl font-bold tracking-tight text-white whitespace-nowrap">{car.kms}</div>
+                  </div>
+                )}
+              </div>
             </motion.div>
           </div>
         </section>
@@ -280,9 +294,10 @@ export default function CarDetail() {
                   Vehicle Intelligence
                 </div>
                 <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Technical Overview</h2>
-                <div className="prose prose-slate dark:prose-invert max-w-none text-muted-foreground leading-relaxed text-lg lg:text-xl">
-                  {car.description}
-                </div>
+                <div
+                  className="prose prose-slate dark:prose-invert max-w-none text-muted-foreground leading-relaxed text-lg lg:text-xl"
+                  dangerouslySetInnerHTML={{ __html: car.description }}
+                />
               </motion.div>
 
               {/* Enhanced Specs Grid */}
@@ -450,55 +465,57 @@ export default function CarDetail() {
                 </Card>
 
                 {/* Logistics Estimator */}
-                <div className="mt-8 p-10 bg-slate-50 dark:bg-slate-900/40 backdrop-blur-md rounded-[40px] border border-border/50">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="p-3 rounded-2xl bg-blue-600 text-white">
-                      <Calculator className="h-5 w-5" />
+                {car.isComingSoon && (
+                  <div className="mt-8 p-10 bg-slate-50 dark:bg-slate-900/40 backdrop-blur-md rounded-[40px] border border-border/50">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="p-3 rounded-2xl bg-blue-600 text-white">
+                        <Calculator className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold">Logistics Estimator</h4>
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Australian Landing</p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-bold">Logistics Estimator</h4>
-                      <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Australian Landing</p>
+
+                    <div className="space-y-6">
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Select Delivery State</label>
+                        <Select value={selectedState} onValueChange={setSelectedState}>
+                          <SelectTrigger className="h-14 rounded-2xl border-border bg-background font-bold px-5">
+                            <SelectValue placeholder="Select State" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="NSW">New South Wales</SelectItem>
+                            <SelectItem value="VIC">Victoria</SelectItem>
+                            <SelectItem value="QLD">Queensland</SelectItem>
+                            <SelectItem value="WA">Western Australia</SelectItem>
+                            <SelectItem value="SA">South Australia</SelectItem>
+                            <SelectItem value="TAS">Tasmania</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-4 p-5 rounded-3xl bg-white dark:bg-black/20 border border-border/50">
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-muted-foreground font-medium">Est. Arrival</span>
+                          <span className="font-bold text-blue-600">{format(addDays(new Date(), 60), "MMMM yyyy")}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-muted-foreground font-medium">Compliance</span>
+                          <span className="font-bold">Included</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm border-t border-border pt-4">
+                          <span className="text-muted-foreground font-medium">State {selectedState} Plating</span>
+                          <span className="font-bold">Managed</span>
+                        </div>
+                      </div>
+
+                      <p className="text-[10px] text-muted-foreground leading-relaxed italic text-center px-4">
+                        *Estimates based on current RoRo shipping schedules from Nagoya Port. Final landing costs subject to currency fluctuation.
+                      </p>
                     </div>
                   </div>
-
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Select Delivery State</label>
-                      <Select value={selectedState} onValueChange={setSelectedState}>
-                        <SelectTrigger className="h-14 rounded-2xl border-border bg-background font-bold px-5">
-                          <SelectValue placeholder="Select State" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="NSW">New South Wales</SelectItem>
-                          <SelectItem value="VIC">Victoria</SelectItem>
-                          <SelectItem value="QLD">Queensland</SelectItem>
-                          <SelectItem value="WA">Western Australia</SelectItem>
-                          <SelectItem value="SA">South Australia</SelectItem>
-                          <SelectItem value="TAS">Tasmania</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-4 p-5 rounded-3xl bg-white dark:bg-black/20 border border-border/50">
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-muted-foreground font-medium">Est. Arrival</span>
-                        <span className="font-bold text-blue-600">{format(addDays(new Date(), 60), "MMMM yyyy")}</span>
-                      </div>
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-muted-foreground font-medium">Compliance</span>
-                        <span className="font-bold">Included</span>
-                      </div>
-                      <div className="flex justify-between items-center text-sm border-t border-border pt-4">
-                        <span className="text-muted-foreground font-medium">State {selectedState} Plating</span>
-                        <span className="font-bold">Managed</span>
-                      </div>
-                    </div>
-
-                    <p className="text-[10px] text-muted-foreground leading-relaxed italic text-center px-4">
-                      *Estimates based on current RoRo shipping schedules from Nagoya Port. Final landing costs subject to currency fluctuation.
-                    </p>
-                  </div>
-                </div>
+                )}
               </motion.div>
             </div>
           </div>
@@ -559,25 +576,53 @@ export default function CarDetail() {
           </section>
         )}
 
-        {/* Floating Context Bar (Mobile) */}
+        {/* Floating Context Bar */}
         <AnimatePresence>
           {showStickyBar && (
             <motion.div
               initial={{ y: 100 }}
               animate={{ y: 0 }}
               exit={{ y: 100 }}
-              className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-background/80 backdrop-blur-2xl border-t border-border flex items-center justify-between gap-4 md:hidden"
+              className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-background/90 backdrop-blur-2xl border-t border-border shadow-[0_-10px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.5)]"
             >
-              <div className="min-w-0">
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground truncate">{car.name}</p>
-                <p className="font-bold text-sm">{car.year} Model</p>
+              <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 w-full">
+                {/* Left Side: Car Info */}
+                <div className="min-w-0 flex-1 flex flex-col md:flex-row md:items-center gap-1 md:gap-6">
+                  <div className="hidden md:block">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground truncate">{car.name}</p>
+                    <p className="font-bold text-sm">{car.year} Model</p>
+                  </div>
+
+                  {/* Mobile simplified info */}
+                  <div className="md:hidden">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground truncate">{car.name}</p>
+                    <p className="font-bold text-base text-foreground leading-none">{formatPrice(car.price, 'POA')}</p>
+                  </div>
+
+                  <div className="hidden md:flex items-center gap-6 md:border-l md:border-border pl-0 md:pl-6">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-0.5">Price</p>
+                      <p className="font-bold text-lg text-foreground leading-none">{formatPrice(car.price, 'POA')}</p>
+                    </div>
+                    {car.kms && (
+                      <div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-0.5">Mileage</p>
+                        <p className="font-bold text-lg text-foreground leading-none">{car.kms}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right Side: Action Button */}
+                <div className="flex items-center gap-3 shrink-0">
+                  <Button
+                    className={`font-bold px-6 sm:px-8 h-12 shadow-xl ${car.isSold ? 'bg-slate-500 hover:bg-slate-600' : 'bg-blue-600 hover:bg-blue-700'}`}
+                    onClick={() => setIsInquiryOpen(true)}
+                  >
+                    {car.isSold ? "Enquire Similar" : "Enquire Now"}
+                  </Button>
+                </div>
               </div>
-              <Button
-                className={`font-bold px-6 shrink-0 ${car.isSold ? 'bg-slate-500 hover:bg-slate-600' : 'bg-blue-600 hover:bg-blue-700'}`}
-                onClick={() => setIsInquiryOpen(true)}
-              >
-                Enquire
-              </Button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -595,7 +640,8 @@ export default function CarDetail() {
 }
 
 
-function SpecCard({ icon, label, value }: { icon: React.ReactNode, label: string, value: string | null }) {
+function SpecCard({ icon, label, value }: { icon: React.ReactNode, label: string, value: string | null | undefined }) {
+  if (!value || value.trim() === "") return null;
   return (
     <div className="flex items-center p-7 rounded-[28px] bg-card border border-border group hover:border-blue-500/40 hover:shadow-2xl hover:shadow-blue-500/5 transition-all duration-500">
       <div className="p-4 rounded-2xl bg-muted/60 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-500 text-muted-foreground">
@@ -603,7 +649,7 @@ function SpecCard({ icon, label, value }: { icon: React.ReactNode, label: string
       </div>
       <div className="ml-5">
         <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1">{label}</p>
-        <p className="text-lg font-bold text-foreground leading-tight tracking-tight">{value || "N/A"}</p>
+        <p className="text-lg font-bold text-foreground leading-tight tracking-tight">{value}</p>
       </div>
     </div>
   );

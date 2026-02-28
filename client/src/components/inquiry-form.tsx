@@ -82,21 +82,22 @@ export function InquiryForm({
         setIsSubmitting(true);
         try {
             await createInquiryFirebase(data);
-            
-            // Trigger notification
+
+            // Trigger notification (non-fatal)
             try {
                 const notifyRes = await fetch("/api/notify/inquiry", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(data),
                 });
+
+                // We don't throw here even if !notifyRes.ok
                 if (!notifyRes.ok) {
                     const errorText = await notifyRes.text();
-                    throw new Error(`Notification failed (${notifyRes.status}): ${errorText}`);
+                    console.warn(`Notification failed (${notifyRes.status}): ${errorText}`);
                 }
             } catch (notifyErr) {
                 console.warn("Failed to send notification:", notifyErr);
-                throw notifyErr;
             }
 
             await queryClient.invalidateQueries({ queryKey: ["inquiries"] });
@@ -143,7 +144,7 @@ export function InquiryForm({
                                     <FormItem>
                                         <FormLabel>First Name</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="John" {...field} />
+                                            <Input {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -157,7 +158,7 @@ export function InquiryForm({
                                     <FormItem>
                                         <FormLabel>Last Name</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Doe" {...field} />
+                                            <Input {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -173,7 +174,7 @@ export function InquiryForm({
                                     <FormItem>
                                         <FormLabel>Email</FormLabel>
                                         <FormControl>
-                                            <Input type="email" placeholder="john.doe@example.com" {...field} />
+                                            <Input type="email" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -187,7 +188,7 @@ export function InquiryForm({
                                     <FormItem>
                                         <FormLabel>Phone Number</FormLabel>
                                         <FormControl>
-                                            <Input type="tel" placeholder="0400 000 000" {...field} />
+                                            <Input type="tel" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -202,7 +203,7 @@ export function InquiryForm({
                                 <FormItem>
                                     <FormLabel>Location / Address</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="e.g. Sydney, NSW" {...field} />
+                                        <Input {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -217,7 +218,6 @@ export function InquiryForm({
                                     <FormLabel>Message (Optional)</FormLabel>
                                     <FormControl>
                                         <Textarea
-                                            placeholder="Ask about shipping, compliance, or request more photos..."
                                             className="min-h-32"
                                             {...field}
                                         />
