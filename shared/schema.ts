@@ -9,6 +9,7 @@ export const cars = pgTable("cars", {
   name: text("name").notNull(),
   category: text("category").notNull(),
   description: text("description").notNull(),
+  vehicleSpecifications: text("vehicle_specifications"),
   image: text("image").notNull(),
   images: text("images").array().default(sql`'{}'`),
   seats: integer("seats").notNull(),
@@ -87,6 +88,7 @@ export const insertCarSchema = createInsertSchema(cars).omit({
   accidentHistory: z.string().optional().nullable(),
   dossierTitle: z.string().optional().nullable(),
   dossierText: z.string().optional().nullable(),
+  vehicleSpecifications: z.string().optional().nullable(),
   published: z.boolean().optional().default(true),
 });
 

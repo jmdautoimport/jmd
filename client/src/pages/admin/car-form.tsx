@@ -46,8 +46,6 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 const categories = ["Sedan", "SUV", "Sports", "Luxury", "Electric", "Compact"];
-const transmissions = ["Automatic", "Manual"];
-const fuelTypes = ["Petrol", "Diesel", "Electric", "Hybrid"];
 
 type GalleryItem = {
   id: string;
@@ -229,6 +227,7 @@ export default function CarForm() {
       name: "",
       category: "Sedan",
       description: "",
+      vehicleSpecifications: "",
       image: "",
       images: [],
       seats: 5,
@@ -268,6 +267,7 @@ export default function CarForm() {
         name: carData.name as string,
         category: carData.category as string,
         description: carData.description as string,
+        vehicleSpecifications: (carData.vehicleSpecifications as string) || "",
         image: carData.image as string,
         images: carData.images || [],
         seats: carData.seats as number,
@@ -615,7 +615,7 @@ export default function CarForm() {
                       <div className="bg-white">
                         <ReactQuill
                           theme="snow"
-                          value={field.value}
+                          value={field.value || ""}
                           onChange={field.onChange}
                           className="h-64 mb-12"
                         />
@@ -747,234 +747,29 @@ export default function CarForm() {
               <CardTitle>Vehicle Specifications</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 gap-6">
-                <FormField
-                  control={form.control}
-                  name="year"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Production Year</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          value={field.value || ''}
-                          onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
-                          data-testid="input-year"
+              <FormField
+                control={form.control}
+                name="vehicleSpecifications"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Vehicle Specifications</FormLabel>
+                    <FormControl>
+                      <div className="bg-white">
+                        <ReactQuill
+                          theme="snow"
+                          value={field.value || ""}
+                          onChange={field.onChange}
+                          className="h-64 mb-12"
                         />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="transmission"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Transmission</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger data-testid="select-transmission">
-                            <SelectValue placeholder="Select transmission" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {transmissions.map((trans) => (
-                            <SelectItem key={trans} value={trans}>
-                              {trans}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="fuelType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Fuel Type</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger data-testid="select-fuel-type">
-                            <SelectValue placeholder="Select fuel type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {fuelTypes.map((fuel) => (
-                            <SelectItem key={fuel} value={fuel}>
-                              {fuel}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="grid grid-cols-4 gap-4">
-                <FormField
-                  control={form.control}
-                  name="seats"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Seats</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          value={field.value || ''}
-                          onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
-                          data-testid="input-seats"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="doors"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Doors</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          value={field.value || ''}
-                          onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
-                          data-testid="input-doors"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="luggage"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Luggage</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          value={field.value || ''}
-                          onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
-                          data-testid="input-luggage"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="engine"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Engine</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g. 2.0L petrol engine" {...field} value={field.value || ""} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="power"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Power</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g. 134 hp" {...field} value={field.value || ""} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="consumption"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Consumption</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g. 10.0L/100Km" {...field} value={field.value || ""} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="drivetrain"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Drivetrain</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || ""}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select drivetrain" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="RWD">RWD</SelectItem>
-                          <SelectItem value="FWD">FWD</SelectItem>
-                          <SelectItem value="AWD">AWD</SelectItem>
-                          <SelectItem value="4WD">4WD</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="exteriorColor"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Exterior Color</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g. Arctic White" {...field} value={field.value || ""} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="interiorColor"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Interior Color</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g. Black Leather" {...field} value={field.value || ""} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                      </div>
+                    </FormControl>
+                    <FormDescription>
+                      Use formatting to structure the vehicle specifications as needed.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </CardContent>
           </Card>
 

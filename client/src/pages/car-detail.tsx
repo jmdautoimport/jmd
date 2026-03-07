@@ -11,20 +11,15 @@ import { Separator } from "@/components/ui/separator";
 import {
   ArrowLeft,
   Fuel,
-  Settings,
-  Users as SeatsIcon,
   Check,
   Send,
   Info,
   Droplets,
   Zap,
-  Activity,
-  Palette,
   Calendar,
   ShieldCheck,
   Globe,
   Gauge,
-  Compass,
   Ship,
   FileText,
   ShieldAlert,
@@ -37,8 +32,6 @@ import {
   Bluetooth,
   Wind,
   Usb,
-  DoorOpen as Door,
-  Briefcase,
 } from "lucide-react";
 import { getCarBySlugFirebase, getAllCarsFirebase } from "@/lib/carsFirebase";
 import { InquiryForm } from "@/components/inquiry-form";
@@ -300,32 +293,22 @@ export default function CarDetail() {
                 />
               </motion.div>
 
-              {/* Enhanced Specs Grid */}
+              {car.vehicleSpecifications?.trim() && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="space-y-6 pt-8"
+                >
+                  <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Vehicle Specifications</h2>
+                  <div
+                    className="prose prose-slate dark:prose-invert max-w-none text-muted-foreground leading-relaxed text-lg lg:text-xl"
+                    dangerouslySetInnerHTML={{ __html: car.vehicleSpecifications }}
+                  />
+                </motion.div>
+              )}
+
               <div className="space-y-8 pt-8">
-                <div className="flex items-center justify-between border-b border-border pb-6">
-                  <h3 className="text-2xl font-bold">Vehicle Specifications</h3>
-                  <Badge variant="outline" className="bg-muted/50 rounded-lg px-3 py-1 text-xs font-mono">
-                    VERIFIED ASSET
-                  </Badge>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  <SpecCard icon={<Calendar className="h-6 w-6" />} label="Production Year" value={car.year?.toString() || null} />
-                  <SpecCard icon={<Settings className="h-6 w-6" />} label="Transmission" value={car.transmission} />
-                  <SpecCard icon={<Fuel className="h-6 w-6" />} label="Fuel Type" value={car.fuelType} />
-                  <SpecCard icon={<SeatsIcon className="h-6 w-6" />} label="Seats" value={car.seats?.toString() || null} />
-                  <SpecCard icon={<Door className="h-6 w-6" />} label="Doors" value={car.doors?.toString() || null} />
-                  <SpecCard icon={<Briefcase className="h-6 w-6" />} label="Luggage" value={car.luggage?.toString() || null} />
-                  <SpecCard icon={<Gauge className="h-6 w-6" />} label="Engine" value={car.engine} />
-                  <SpecCard icon={<Zap className="h-6 w-6" />} label="Power" value={car.power} />
-                  <SpecCard icon={<Compass className="h-6 w-6" />} label="Consumption" value={car.consumption} />
-                  <SpecCard icon={<Activity className="h-6 w-6" />} label="Drivetrain" value={car.drivetrain} />
-                  <SpecCard icon={<Palette className="h-6 w-6" />} label="Exterior Color" value={car.exteriorColor} />
-                  <SpecCard icon={<Palette className="h-6 w-6" />} label="Interior Color" value={car.interiorColor} />
-                </div>
-
-
-
                 {/* Main Features & Availability Grid */}
                 <div className="pt-8 space-y-6">
                   <div className="flex items-center justify-between border-b border-border pb-6">
@@ -638,23 +621,6 @@ export default function CarDetail() {
     </>
   );
 }
-
-
-function SpecCard({ icon, label, value }: { icon: React.ReactNode, label: string, value: string | null | undefined }) {
-  if (!value || value.trim() === "") return null;
-  return (
-    <div className="flex items-center p-7 rounded-[28px] bg-card border border-border group hover:border-blue-500/40 hover:shadow-2xl hover:shadow-blue-500/5 transition-all duration-500">
-      <div className="p-4 rounded-2xl bg-muted/60 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-500 text-muted-foreground">
-        {icon}
-      </div>
-      <div className="ml-5">
-        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1">{label}</p>
-        <p className="text-lg font-bold text-foreground leading-tight tracking-tight">{value}</p>
-      </div>
-    </div>
-  );
-}
-
 
 
 function FeatureItem({ text }: { text: string }) {
