@@ -34,6 +34,7 @@ import Booking from "@/pages/booking";
 import { SiteProtection } from "@/components/site-protection";
 import FindMeACar from "@/pages/find-me-a-car";
 import { registerForNotifications } from "@/lib/messaging";
+import { ShieldAlert } from "lucide-react";
 
 // Simple Protected Route Component
 function ProtectedRoute({ component: Component, ...rest }: any) {
@@ -165,7 +166,7 @@ function Router() {
 }
 
 function AppContent() {
-  const { maintenanceMode, isLoading: isSettingsLoading } = useWebsiteSettings();
+  const { maintenanceMode, sitePasswordEnabled, isLoading: isSettingsLoading } = useWebsiteSettings();
   const [showLoader, setShowLoader] = useState(true);
 
   // Set a maximum timeout for the loader (3 seconds)
@@ -207,6 +208,17 @@ function AppContent() {
 
   return (
     <>
+      {isAdminAuthenticated && sitePasswordEnabled && (
+        <div className="fixed bottom-6 right-6 z-[100] bg-blue-600/90 backdrop-blur-md text-white px-4 py-3 rounded-2xl shadow-2xl border border-white/20 flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="bg-white/20 p-2 rounded-xl">
+            <ShieldAlert className="h-5 w-5 animate-pulse" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[10px] font-black uppercase tracking-widest text-blue-100 leading-none mb-1">Security Alert</span>
+            <span className="text-xs font-bold leading-tight">Site Password Active</span>
+          </div>
+        </div>
+      )}
       <SEO />
       <ScrollToTop />
       <Router />

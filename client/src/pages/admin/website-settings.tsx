@@ -115,6 +115,7 @@ const websiteSettingsSchema = z.object({
   // Pages
   termsAndConditions: z.string().optional(),
   maintenanceMode: z.boolean().default(false),
+  sitePasswordEnabled: z.boolean().default(true),
 });
 
 type WebsiteSettingsForm = z.infer<typeof websiteSettingsSchema>;
@@ -286,6 +287,7 @@ export default function WebsiteSettings() {
         // Pages
         termsAndConditions: settings.termsAndConditions || "",
         maintenanceMode: settings.maintenanceMode || false,
+        sitePasswordEnabled: settings.sitePasswordEnabled !== undefined ? settings.sitePasswordEnabled : true,
       });
       if (settings.logo) {
         setLogoPreview(settings.logo);
@@ -372,6 +374,7 @@ export default function WebsiteSettings() {
         // Pages
         termsAndConditions: data.termsAndConditions || undefined,
         maintenanceMode: data.maintenanceMode,
+        sitePasswordEnabled: data.sitePasswordEnabled,
       };
       return saveWebsiteSettings(cleanedData);
     },
@@ -707,6 +710,27 @@ export default function WebsiteSettings() {
                           <FormLabel className="text-base text-yellow-900 font-bold">Maintenance Mode</FormLabel>
                           <FormDescription className="text-yellow-800">
                             When enabled, public users will see a "Coming Soon" page. Admins can still access the site.
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="sitePasswordEnabled"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 bg-blue-50/50 border-blue-200">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-base text-blue-900 font-bold">Site-Wide Password Protection</FormLabel>
+                          <FormDescription className="text-blue-800">
+                            When enabled, the entire website is restricted behind a password prompt.
                           </FormDescription>
                         </div>
                         <FormControl>

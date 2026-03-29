@@ -6,9 +6,9 @@ import { SEO } from "@/components/seo";
 import { useWebsiteSettings } from "@/hooks/use-website-settings";
 
 export default function Privacy() {
-  const { settings } = useWebsiteSettings();
-  const companyName = settings?.companyName || "Auto Import Specialists";
-  const email = settings?.email || "info@jdmautoimports.com.au";
+  const { companyName: settingsCompanyName, email: settingsEmail } = useWebsiteSettings();
+  const companyName = settingsCompanyName || "Auto Import Specialists";
+  const email = settingsEmail || "info@jdmautoimports.com.au";
 
   return (
     <>

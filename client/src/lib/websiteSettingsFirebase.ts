@@ -79,6 +79,7 @@ export interface WebsiteSettings {
   // Pages
   termsAndConditions?: string;
   maintenanceMode?: boolean;
+  sitePasswordEnabled?: boolean;
 }
 
 export const defaultWebsiteSettings: WebsiteSettings = {
@@ -172,6 +173,7 @@ The materials appearing on our website could include technical, typographical, o
 ## 5. Governing Law
 These terms and conditions are governed by and construed in accordance with the laws of the location of our headquarters and you irrevocably submit to the exclusive jurisdiction of the courts in that State or location.`,
   maintenanceMode: false,
+  sitePasswordEnabled: true,
 };
 
 /**

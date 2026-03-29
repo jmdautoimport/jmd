@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Lock } from "lucide-react";
+import { useWebsiteSettings } from "@/hooks/use-website-settings";
 
 export function SiteProtection({ children }: { children: React.ReactNode }) {
+  const { sitePasswordEnabled, isLoading } = useWebsiteSettings();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
@@ -27,7 +29,8 @@ export function SiteProtection({ children }: { children: React.ReactNode }) {
     }
   };
 
-  if (isAuthenticated) {
+  // If password protection is disabled or loading settings, show the site
+  if (isLoading || sitePasswordEnabled === false || isAuthenticated) {
     return <>{children}</>;
   }
 
