@@ -64,7 +64,7 @@ function ScrollToTop() {
     });
 
     // Also scroll admin panel's main container to top if it exists
-    const adminMain = document.querySelector('main.overflow-auto');
+    const adminMain = document.querySelector('[data-admin-scroll-container="true"]');
     if (adminMain) {
       adminMain.scrollTo({
         top: 0,
@@ -92,13 +92,16 @@ function AdminRouter() {
 
   return (
     <SidebarProvider style={style as React.CSSProperties}>
-      <div className="flex h-screen w-full">
+      <div className="flex h-svh w-full overflow-hidden">
         <AppSidebar />
-        <div className="flex flex-col flex-1 overflow-hidden">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <header className="flex items-center justify-between p-4 border-b bg-background">
             <SidebarTrigger data-testid="button-sidebar-toggle" />
           </header>
-          <main className="flex-1 overflow-auto">
+          <main
+            className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden"
+            data-admin-scroll-container="true"
+          >
             <div className="px-6 py-4">
               <Switch>
                 <Route path="/admin/cars/new" component={CarForm} />
@@ -184,6 +187,24 @@ function AppContent() {
   const isAdminAuthenticated = localStorage.getItem("isAdminAuthenticated") === "true";
   const [location] = useLocation();
   const isAdminRoute = location.startsWith("/admin");
+
+  useEffect(() => {
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+    const previousBodyOverflow = document.body.style.overflow;
+
+    if (isAdminRoute) {
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+    } else {
+      document.documentElement.style.overflow = previousHtmlOverflow;
+      document.body.style.overflow = previousBodyOverflow;
+    }
+
+    return () => {
+      document.documentElement.style.overflow = previousHtmlOverflow;
+      document.body.style.overflow = previousBodyOverflow;
+    };
+  }, [isAdminRoute]);
 
   // If we are loading and not on an admin route, show nothing or a minimal loader
   // This prevents the main website from flickering
