@@ -29,10 +29,8 @@ export function SiteProtection({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // If password protection is disabled or loading settings, show the site
-  if (isLoading || sitePasswordEnabled === false || isAuthenticated) {
-    return <>{children}</>;
-  }
+  // Site restriction removed as per user request
+  return <>{children}</>;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-900 p-4">

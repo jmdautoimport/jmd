@@ -115,7 +115,7 @@ const websiteSettingsSchema = z.object({
   // Pages
   termsAndConditions: z.string().optional(),
   maintenanceMode: z.boolean().default(false),
-  sitePasswordEnabled: z.boolean().default(true),
+  sitePasswordEnabled: z.boolean().default(false),
 });
 
 type WebsiteSettingsForm = z.infer<typeof websiteSettingsSchema>;
@@ -287,7 +287,7 @@ export default function WebsiteSettings() {
         // Pages
         termsAndConditions: settings.termsAndConditions || "",
         maintenanceMode: settings.maintenanceMode || false,
-        sitePasswordEnabled: settings.sitePasswordEnabled !== undefined ? settings.sitePasswordEnabled : true,
+        sitePasswordEnabled: settings.sitePasswordEnabled !== undefined ? settings.sitePasswordEnabled : false,
       });
       if (settings.logo) {
         setLogoPreview(settings.logo);
